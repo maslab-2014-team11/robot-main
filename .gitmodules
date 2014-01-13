@@ -1,0 +1,3 @@
+[submodule "staff"]
+	path = staff
+	url = https://github.com/jwbowler/maslab-2014.git
