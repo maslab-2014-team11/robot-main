@@ -64,8 +64,10 @@ public class Maple {
 	private class MapleIOThread extends Thread {
 		@Override
 		public void run() {
-			comm.transmit();
-			comm.updateSensorData();
+			for (;;) {
+				comm.transmit();
+				comm.updateSensorData();
+			}
 		}
 	}
 }
