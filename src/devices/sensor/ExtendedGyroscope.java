@@ -27,11 +27,15 @@ public class ExtendedGyroscope extends Gyroscope implements ExtendedSensor {
 		return super.getAngleChangeSinceLastUpdate();
 	}
 
+	public synchronized double getOmega() {
+		return super.getOmega();
+	}
+
 	/**
 	 * Return the angular velocity in degrees/second
 	 */
-	public synchronized double getOmega() {
-		return super.getOmega() * 180.0 / Math.PI;
+	public synchronized double getOmegaDeg() {
+		return getOmega() * 180.0 / Math.PI;
 	}
 
 	@Override

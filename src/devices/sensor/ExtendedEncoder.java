@@ -24,30 +24,34 @@ public class ExtendedEncoder extends Encoder implements ExtendedSensor {
 		this.pinB = checkPin;
 	}
 
-	/**
-	 * Return the last measured angular speed in degrees/second
-	 */
+	@Override
+	public synchronized double getDeltaAngularDistance() {
+		return super.getDeltaAngularDistance();
+	}
+
 	@Override
 	public synchronized double getAngularSpeed() {
-		return super.getAngularSpeed() * 180.0 / Math.PI;
+		return super.getAngularSpeed();
+	}
+
+	@Override
+	public synchronized double getTotalAngularDistance() {
+		return super.getTotalAngularDistance();
 	}
 
 	/**
-	 * Return the number of degrees through which the wheel has turned since the
-	 * last measurement
+	 * Return the last measured angular speed in degrees/second
 	 */
-	@Override
-	public synchronized double getDeltaAngularDistance() {
-		return super.getDeltaAngularDistance() * 180.0 / Math.PI;
+	public synchronized double getAngularSpeedDeg() {
+		return getAngularSpeed() * 180.0 / Math.PI;
 	}
 
 	/**
 	 * Return the number of degrees through which the wheel has turned since the
 	 * program started
 	 */
-	@Override
-	public synchronized double getTotalAngularDistance() {
-		return super.getTotalAngularDistance() * 180. / Math.PI;
+	public synchronized double getTotalAngularDistanceDeg() {
+		return getTotalAngularDistance() * 180. / Math.PI;
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.util.List;
 
 import devices.port.Pin;
 
-public class ExtendedCytron extends Cytron implements ExtendedActuator {
+public class ExtendedCytron extends Cytron implements ExtendedActuator{
 
 	private final Pin dirPin;
 	private final Pin pwmPin;

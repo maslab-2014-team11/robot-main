@@ -26,8 +26,7 @@ public class ExtendedUltrasonic extends Ultrasonic implements ExtendedSensor {
 	/**
 	 * Return the sensor's measured distance in centimeters
 	 */
-	@Override
-	public double getDistance() {
+	public double getDistanceCM() {
 		return 100 * super.getDistance();
 	}
 
