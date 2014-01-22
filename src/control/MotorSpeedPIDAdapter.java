@@ -41,6 +41,12 @@ public class MotorSpeedPIDAdapter implements PIDInputOutput {
 
 	}
 
+	/**
+	 * Set the target speed of the motor in degrees/second
+	 * 
+	 * @param speed
+	 *            the new target speed of the motor
+	 */
 	public synchronized void setTargetSpeed(double speed) {
 		desiredSpeed = speed;
 	}
