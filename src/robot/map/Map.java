@@ -35,8 +35,8 @@ public class Map{
 		imageHeight = 1080;
 		imageWidth = 1920;
 		
-		ballRadius = 1.75;
-		wallHeight = 4;
+		ballRadius = 44.45;
+		wallHeight = 152.4;
 		
 		cameraOffset = Math.PI/6.0;
 		cameraFOVx = (2*Math.PI)/3.0;
@@ -67,9 +67,16 @@ public class Map{
 		double depth = rad*Math.cos(theta);
 		double offset = rad*Math.sin(theta);
 		
-		RedBalls.add(new RedBall(origin.x + Math.cos(facing)*depth - Math.sin(facing)*offset,
-				                 origin.y + Math.sin(facing)*depth + Math.cos(facing)*offset,
-				                 ballRadius));
+		RedBall workingBall = new RedBall(origin.x + Math.cos(facing)*depth - Math.sin(facing)*offset,
+                						  origin.y + Math.sin(facing)*depth + Math.cos(facing)*offset,
+                						  ballRadius);
+		Iterator<RedBall> ballSet = getRedBalls();
+		
+		while(ballSet.hasNext()){
+			if(!ballSet.next().verifyObject(workingBall))
+				break;
+		}
+		RedBalls.add(workingBall);
 	}
 	
 	public Iterator<GreenBall> getGreenBalls(){ return GreenBalls.iterator(); }
@@ -87,9 +94,16 @@ public class Map{
 		double depth = rad*Math.cos(theta);
 		double offset = rad*Math.sin(theta);
 		
-		GreenBalls.add(new GreenBall(origin.x + Math.cos(facing)*depth - Math.sin(facing)*offset,
-				                     origin.y + Math.sin(facing)*depth + Math.cos(facing)*offset,
-				                     ballRadius));
+		GreenBall workingBall = new GreenBall(origin.x + Math.cos(facing)*depth - Math.sin(facing)*offset,
+				  							origin.y + Math.sin(facing)*depth + Math.cos(facing)*offset,
+				  							ballRadius);
+		Iterator<GreenBall> ballSet = getGreenBalls();
+		
+		while(ballSet.hasNext()){
+			if(!ballSet.next().verifyObject(workingBall))
+				break;
+		}
+		GreenBalls.add(workingBall);
 	}
 	
 	public Iterator<Wall> getWalls(){ return Walls.iterator(); }
@@ -110,11 +124,19 @@ public class Map{
 		double depth2 = r2*Math.cos(theta2);
 		double offset2 = r2*Math.sin(theta2);
 		
-		Walls.add(new Wall(origin.x + Math.cos(facing)*depth1 - Math.sin(facing)*offset1,
-				           origin.y + Math.sin(facing)*depth1 + Math.cos(facing)*offset1,
-				           origin.x + Math.cos(facing)*depth2 - Math.sin(facing)*offset2,
-				           origin.y + Math.sin(facing)*depth2 + Math.cos(facing)*offset2));
+		Wall workingWall = new Wall(origin.x + Math.cos(facing)*depth1 - Math.sin(facing)*offset1,
+				           			origin.y + Math.sin(facing)*depth1 + Math.cos(facing)*offset1,
+				           			origin.x + Math.cos(facing)*depth2 - Math.sin(facing)*offset2,
+				           			origin.y + Math.sin(facing)*depth2 + Math.cos(facing)*offset2);
 		
+		Iterator<Wall> wallSet = getWalls();
+		
+		while(wallSet.hasNext()){
+			if(!wallSet.next().verifyObject(workingWall))
+				break;
+		}
+		Walls.add(workingWall);
+				           			
 		discreteMap.addWalls(getWalls());
 	}
 	
@@ -136,11 +158,19 @@ public class Map{
 		double depth2 = r2*Math.cos(theta2);
 		double offset2 = r2*Math.sin(theta2);
 		
-		Silos.add(new Silo(origin.x + Math.cos(facing)*depth1 - Math.sin(facing)*offset1,
-				           origin.y + Math.sin(facing)*depth1 + Math.cos(facing)*offset1,
-				           origin.x + Math.cos(facing)*depth2 - Math.sin(facing)*offset2,
-				           origin.y + Math.sin(facing)*depth2 + Math.cos(facing)*offset2,
-				           number));
+		Silo workingSilo = new Silo(origin.x + Math.cos(facing)*depth1 - Math.sin(facing)*offset1,
+       								origin.y + Math.sin(facing)*depth1 + Math.cos(facing)*offset1,
+       								origin.x + Math.cos(facing)*depth2 - Math.sin(facing)*offset2,
+       								origin.y + Math.sin(facing)*depth2 + Math.cos(facing)*offset2,
+       								number);
+
+		Iterator<Silo> siloSet = getSilos();
+		
+		while(siloSet.hasNext()){
+			if(!siloSet.next().verifyObject(workingSilo))
+				break;
+		}
+		Silos.add(workingSilo);
 	}
 	
 	public Container getContainer(){ return Container; }
@@ -161,9 +191,11 @@ public class Map{
 		double depth2 = r2*Math.cos(theta2);
 		double offset2 = r2*Math.sin(theta2);
 		
-		Container = new Container(origin.x + Math.cos(facing)*depth1 - Math.sin(facing)*offset1,
-				                  origin.y + Math.sin(facing)*depth1 + Math.cos(facing)*offset1,
-				                  origin.x + Math.cos(facing)*depth2 - Math.sin(facing)*offset2,
-				                  origin.y + Math.sin(facing)*depth2 + Math.cos(facing)*offset2);
+		Container workingContainer = new Container(origin.x + Math.cos(facing)*depth1 - Math.sin(facing)*offset1,
+				                  				   origin.y + Math.sin(facing)*depth1 + Math.cos(facing)*offset1,
+				                  				   origin.x + Math.cos(facing)*depth2 - Math.sin(facing)*offset2,
+				                  				   origin.y + Math.sin(facing)*depth2 + Math.cos(facing)*offset2);
+		
+		getContainer().verifyObject(workingContainer);	
 	}
 }
