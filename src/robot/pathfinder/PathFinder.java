@@ -27,4 +27,9 @@ public class PathFinder{
 		return paths.get(start).get(goal);
 	}
 	
+	public List<Coordinate> findPath(Coordinate goal){
+		Coordinate start = map.getState()[0];
+		return findPath(start, goal);
+	}
+	
 }

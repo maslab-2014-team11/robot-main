@@ -64,12 +64,12 @@ public class Grid {
 	}
 	
 	private void addWall(Wall obstruction){
-		List<Coordinate> coords = obstruction.getCoords();
-		double x1 = coords.get(0).x;
-		double x2 = coords.get(1).x;
+		Coordinate[] coords = obstruction.getCoords();
+		double x1 = coords[0].x;
+		double x2 = coords[1].x;
 		double xm = Math.signum(x2-x1);
-		double y1 = coords.get(0).y;
-		double y2 = coords.get(1).y;
+		double y1 = coords[0].y;
+		double y2 = coords[1].y;
 		double ym = Math.signum(y2-y1);
 		for(int i = (int) x1; i*xm < x2*xm; i = (int) (i + 1*xm))
 			for(int j = (int) y1; j*ym < y2*ym; j = (int) (j + 1*ym))
