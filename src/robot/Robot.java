@@ -18,12 +18,4 @@ public class Robot {
 	
 	private PathFinder pathingModule;
 	private SearchEngine searchModule;
-	
-	public Coordinate getLocation(){
-		return new Coordinate((float) 0.0,(float) 0.0);
-	}
-	
-	public double getFacing(){
-		return 0.0;
-	}
 }

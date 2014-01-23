@@ -19,15 +19,28 @@ public class Map{
 	private Container Container;
 	
 	public Grid discreteMap;
+	public Visualizer visualizer;
 	private Robot bot;
 	
+	private Object stateLock = new Object();
+	private Coordinate position = new Coordinate(0,0);
+	private Coordinate rotation = new Coordinate(0,0);
+	
+	public static int squareSize = 31;
+	public static double botSize = 35.54;
 	private static double imageHeight, imageWidth;
 	private static double ballRadius, wallHeight;
 	private static double cameraOffset, cameraFOVx, cameraFOVy;
 	
-	public Map(int h, int w, Robot bot){
-		this.discreteMap = new Grid(h, w, 1);
+	public Map(int h, int w, Robot bot, boolean DebugMode){
+		this.discreteMap = new Grid(h*squareSize, w*squareSize, 1);
 		this.bot = bot;
+		if(DebugMode){
+			this.visualizer = new Visualizer(h, w, this);
+			this.visualizer.start();
+		} else {
+			this.visualizer = null;
+		}
 		initialize();
 	}
 	
@@ -35,13 +48,27 @@ public class Map{
 		imageHeight = 1080;
 		imageWidth = 1920;
 		
-		ballRadius = 44.45;
-		wallHeight = 152.4;
+		ballRadius = 4.445;
+		wallHeight = 15.24;
 		
 		cameraOffset = Math.PI/6.0;
 		cameraFOVx = (2*Math.PI)/3.0;
 		cameraFOVy = (Math.PI)/2.0;
 		
+	}
+	
+	public Coordinate[] getState(){
+		synchronized(stateLock){
+			return new Coordinate[]{new Coordinate(position), 
+									new Coordinate(rotation)};
+		}
+	}
+	
+	public void setState(Coordinate[] newState){
+		synchronized(stateLock){
+			position = new Coordinate(newState[0]);
+			rotation = new Coordinate(newState[1]);
+		}
 	}
 	
  	private double computePhi(double i){
@@ -54,9 +81,9 @@ public class Map{
 	
 	public Iterator<RedBall> getRedBalls(){ return RedBalls.iterator(); }
 	
-	public void addRedBall(double x, double y, double radius){
-		double facing = bot.getFacing();
-		Coordinate origin = bot.getLocation();
+	public void addRedBall(double x, double y, double radius, Coordinate[] state){
+		double facing = state[1].x;
+		Coordinate origin = state[0];
 		double phi = computePhi(y);
 		double theta = computeTheta(x);
 		
@@ -81,9 +108,9 @@ public class Map{
 	
 	public Iterator<GreenBall> getGreenBalls(){ return GreenBalls.iterator(); }
 	
-	public void addGreenBall(float x, float y, float radius){
-		double facing = bot.getFacing();
-		Coordinate origin = bot.getLocation();
+	public void addGreenBall(double x, double y, double radius, Coordinate[] state){
+		double facing = state[1].x;
+		Coordinate origin = state[0];
 		double phi = computePhi(y);
 		double theta = computeTheta(x);
 		
@@ -108,9 +135,9 @@ public class Map{
 	
 	public Iterator<Wall> getWalls(){ return Walls.iterator(); }
 	
-	public void addWall(float x1, float y1, float x2, float y2){
-		double facing = bot.getFacing();
-		Coordinate origin = bot.getLocation();
+	public void addWall(double x1, double y1, double x2, double y2, Coordinate[] state){
+		double facing = state[1].x;
+		Coordinate origin = state[0];
 		double phi1 = computePhi(y1);
 		double theta1 = computeTheta(x1);
 		double phi2 = computePhi(y2);
@@ -142,9 +169,9 @@ public class Map{
 	
 	public Iterator<Silo> getSilos(){ return Silos.iterator(); }
 	
-	public void addSilo(float x1, float y1, float x2, float y2, int number){
-		double facing = bot.getFacing();
-		Coordinate origin = bot.getLocation();
+	public void addSilo(double x1, double y1, double x2, double y2, int number, Coordinate[] state){
+		double facing = state[1].x;
+		Coordinate origin = state[0];
 		double phi1 = computePhi(y1);
 		double theta1 = computeTheta(x1);
 		double phi2 = computePhi(y2);
@@ -175,9 +202,9 @@ public class Map{
 	
 	public Container getContainer(){ return Container; }
 	
-	public void addContainer(float x1, float y1, float x2, float y2){
-		double facing = bot.getFacing();
-		Coordinate origin = bot.getLocation();
+	public void addContainer(double x1, double y1, double x2, double y2, Coordinate[] state){
+		double facing = state[1].x;
+		Coordinate origin = state[0];
 		double phi1 = computePhi(y1);
 		double theta1 = computeTheta(x1);
 		double phi2 = computePhi(y2);

@@ -3,6 +3,11 @@ package robot.map.objects;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+
 import robot.map.Coordinate;
 import robot.map.MapObject;
 
@@ -43,6 +48,11 @@ public class Wall extends MapObject{
 		output.add(this.first);
 		output.add(this.second);
 		return output;
+	}
+	
+	public void Draw(Mat canvas){
+		  Core.line(canvas, new Point(this.first.x, this.first.y), 
+				  	new Point(this.second.x, this.second.y), new Scalar(255,0,0), 3);
 	}
 	
 }
