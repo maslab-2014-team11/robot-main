@@ -16,7 +16,7 @@ public class Map{
 	private CopyOnWriteArraySet<GreenBall> GreenBalls = new CopyOnWriteArraySet<GreenBall>();
 	private CopyOnWriteArraySet<Wall> Walls = new CopyOnWriteArraySet<Wall>();
 	private CopyOnWriteArraySet<Silo> Silos = new CopyOnWriteArraySet<Silo>();
-	private Container Container;
+	private Container Container = null;
 	
 	public Grid discreteMap;
 	public Visualizer visualizer;
@@ -52,8 +52,8 @@ public class Map{
 		wallHeight = 15.24;
 		
 		cameraOffset = Math.PI/6.0;
-		cameraFOVx = (2*Math.PI)/3.0;
-		cameraFOVy = (Math.PI)/2.0;
+		cameraFOVx = Math.PI/3.0;
+		cameraFOVy = (Math.PI)/4.0;
 		
 	}
 	
@@ -98,12 +98,15 @@ public class Map{
                 						  origin.y + Math.sin(facing)*depth + Math.cos(facing)*offset,
                 						  ballRadius);
 		Iterator<RedBall> ballSet = getRedBalls();
+		boolean unique = true;
 		
 		while(ballSet.hasNext()){
 			if(!ballSet.next().verifyObject(workingBall))
+				unique = false;
 				break;
 		}
-		RedBalls.add(workingBall);
+		if(unique)
+			RedBalls.add(workingBall);
 	}
 	
 	public Iterator<GreenBall> getGreenBalls(){ return GreenBalls.iterator(); }
@@ -125,12 +128,15 @@ public class Map{
 				  							origin.y + Math.sin(facing)*depth + Math.cos(facing)*offset,
 				  							ballRadius);
 		Iterator<GreenBall> ballSet = getGreenBalls();
+		boolean unique = true;
 		
 		while(ballSet.hasNext()){
 			if(!ballSet.next().verifyObject(workingBall))
+				unique = false;
 				break;
 		}
-		GreenBalls.add(workingBall);
+		if(unique)
+			GreenBalls.add(workingBall);
 	}
 	
 	public Iterator<Wall> getWalls(){ return Walls.iterator(); }
@@ -157,13 +163,15 @@ public class Map{
 				           			origin.y + Math.sin(facing)*depth2 + Math.cos(facing)*offset2);
 		
 		Iterator<Wall> wallSet = getWalls();
+		boolean unique = true;
 		
 		while(wallSet.hasNext()){
 			if(!wallSet.next().verifyObject(workingWall))
+				unique = false;
 				break;
 		}
-		Walls.add(workingWall);
-				           			
+		if(unique)
+			Walls.add(workingWall);           			
 		discreteMap.addWalls(getWalls());
 	}
 	
@@ -192,12 +200,15 @@ public class Map{
        								number);
 
 		Iterator<Silo> siloSet = getSilos();
+		boolean unique = true;
 		
 		while(siloSet.hasNext()){
 			if(!siloSet.next().verifyObject(workingSilo))
+				unique = false;
 				break;
 		}
-		Silos.add(workingSilo);
+		if(unique)
+			Silos.add(workingSilo);
 	}
 	
 	public Container getContainer(){ return Container; }
@@ -222,7 +233,9 @@ public class Map{
 				                  				   origin.y + Math.sin(facing)*depth1 + Math.cos(facing)*offset1,
 				                  				   origin.x + Math.cos(facing)*depth2 - Math.sin(facing)*offset2,
 				                  				   origin.y + Math.sin(facing)*depth2 + Math.cos(facing)*offset2);
-		
-		getContainer().verifyObject(workingContainer);	
+		if(getContainer() == null)
+			Container = workingContainer;
+		else
+			getContainer().verifyObject(workingContainer);	
 	}
 }
