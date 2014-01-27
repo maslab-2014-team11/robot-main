@@ -31,11 +31,12 @@ public class Container extends MapObject{
 	
 	private void adjustEstimate(Container other){
 		Coordinate[] otherCoord = other.getCoords();
+		this.confidence = this.confidence + 1;
 		
-		this.first = new Coordinate((this.first.x + otherCoord[0].x)/2.0,
-				                    (this.first.y + otherCoord[0].y)/2.0);
-		this.second = new Coordinate((this.second.x + otherCoord[1].x)/2.0,
-                  					 (this.second.y + otherCoord[1].y)/2.0);
+		this.first = new Coordinate((this.first.x*this.confidence + otherCoord[0].x)/(this.confidence + 1.0),
+				                    (this.first.y*this.confidence + otherCoord[0].y)/(this.confidence + 1.0));
+		this.second = new Coordinate((this.second.x*this.confidence + otherCoord[1].x)/(this.confidence + 1.0),
+                  					 (this.second.y*this.confidence + otherCoord[1].y)/(this.confidence + 1.0));
 	}
 	
 	public Coordinate[] getCoords(){

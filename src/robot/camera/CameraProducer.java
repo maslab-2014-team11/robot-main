@@ -6,7 +6,7 @@ import org.opencv.highgui.VideoCapture;
 public class CameraProducer extends Thread{
 
 	private VideoCapture input;
-	private Mat image;
+	private Mat image = new Mat();
 	private Object imageLock = new Object();
 	
 	public CameraProducer(VideoCapture input){
@@ -21,14 +21,15 @@ public class CameraProducer extends Thread{
 	
 	public void run(){
 		while(true){
-			synchronized(imageLock){
-				while (!input.read(image)) {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+			try{
+				synchronized(imageLock){
+					while (!input.read(image)) {
+							Thread.sleep(1);
 					}
 				}
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}

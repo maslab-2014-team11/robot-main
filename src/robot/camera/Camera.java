@@ -8,6 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 
@@ -40,6 +41,7 @@ public class Camera extends Thread {
 		this.input.start();
 		this.output.start();
 		
+		this.map = map;
 		this.type = type;
 		switch(type){
 			case VISION:
@@ -50,16 +52,22 @@ public class Camera extends Thread {
 	
 	public void run(){
 		while(true){
+			System.out.println("Fetching Image");
 			this.input.getImage(rawImage);
+			System.out.println("Fetching State");
 			Coordinate[] state = map.getState();
 			List<Mat> outputSets = new ArrayList<Mat>();
 			outputSets.add(rawImage);
+			
+			System.out.println("Image & State -> Data");
 			
 			prepImage();
 			
 			outputSets.addAll(findRedBalls(false));
 			outputSets.addAll(findGreenBalls(false));
 			outputSets.addAll(findBlueWalls(false));
+			
+			System.out.println("Pushing Data");
 			
 			try {
 				stateData.put(state);
@@ -72,7 +80,7 @@ public class Camera extends Thread {
 	}
 	
 	private void prepImage(){
-		blurImage(rawImage, processingImage);
+		startingBlur(rawImage, processingImage);
 		generateMasks(processingImage);
 	}
 	
@@ -85,11 +93,13 @@ public class Camera extends Thread {
 		applyMask(processingImage, redMask, maskedImage);
 		createEdgeMap(maskedImage, grayImage);
 		fillBallSet(grayImage, redBalls);
-		output.add(redBalls);
+		redBalls = thresholdBalls(redBalls, maskedImage);
 		if(debugMode){
+			//output.add(maskedImage);
 			Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
 			output.add(grayImage);
 		}
+		output.add(redBalls);
 		return output;
 	}
 	
@@ -102,11 +112,13 @@ public class Camera extends Thread {
 		applyMask(processingImage, greenMask, maskedImage);
 		createEdgeMap(maskedImage, grayImage);
 		fillBallSet(grayImage, greenBalls);
-		output.add(greenBalls);
+		greenBalls = thresholdBalls(greenBalls, maskedImage);
 		if(debugMode){
+			//output.add(maskedImage);
 			Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
 			output.add(grayImage);
 		}
+		output.add(greenBalls);
 		return output;
 	}
 	
@@ -119,12 +131,18 @@ public class Camera extends Thread {
 		applyMask(processingImage, blueMask, maskedImage);
 		createEdgeMap(maskedImage, grayImage);
 		fillLineSet(grayImage, blueWalls);
-		output.add(blueWalls);
+		blueWalls = thresholdWalls(blueWalls, maskedImage);
 		if(debugMode){
 			Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
 			output.add(maskedImage);
 		}
+		output.add(blueWalls);
 		return output;
+	}
+	
+	private void startingBlur(Mat raw, Mat output){
+		Imgproc.bilateralFilter(raw, output, 5, Settings.initialSigma, 1.5*Settings.initialSigma);
+		Imgproc.GaussianBlur(output, output, Settings.initialKernal, Settings.initialSigma);
 	}
 	
 	private void blurImage(Mat raw, Mat output){
@@ -171,6 +189,46 @@ public class Camera extends Thread {
 		Imgproc.HoughCircles(edgeMap, ballSet, Imgproc.CV_HOUGH_GRADIENT, 
 				Settings.ballResolution, Settings.ballMinSeparation, Settings.sobelStrength*2, 
 				Settings.ballThreshold, Settings.ballMinSize, Settings.ballMaxSize);
+	}
+	
+	private Mat thresholdBalls(Mat startingSet, Mat mask){
+		Mat tempMask = new Mat();
+		Mat ballSet = new Mat();
+		Imgproc.blur(mask, tempMask, new Size(1,1));
+		int newWidth = 0;
+		for(int i = 0; i < startingSet.size().width; i++)
+			if(tempMask.get((int) startingSet.get(0,i).clone()[1],
+							(int) startingSet.get(0,i).clone()[0])[0] < 128)
+				newWidth++;
+		ballSet = Mat.zeros((int) startingSet.size().height, newWidth, startingSet.type());
+		int j = 0;
+		for(int i = 0; i < startingSet.size().width; i++)
+			if(tempMask.get((int) startingSet.get(0,i).clone()[1],
+							(int) startingSet.get(0,i).clone()[0])[0] < 128){
+				ballSet.put(0, j, startingSet.get(0, i));
+				j++;
+			}
+		return ballSet;
+	}
+	
+	private Mat thresholdWalls(Mat startingSet, Mat mask){
+		Mat tempMask = new Mat();
+		Mat wallSet = new Mat();
+		Imgproc.blur(mask, tempMask, new Size(1,1));
+		int newWidth = 0;
+		for(int i = 0; i < startingSet.size().width; i++)
+			if(tempMask.get(Math.min((int)(startingSet.get(0,i).clone()[1] + startingSet.get(0,i).clone()[3])/2 + 10, 1080),
+				    		(int) (startingSet.get(0,i).clone()[0] + startingSet.get(0,i).clone()[2])/2)[0] < 128)
+				newWidth++;
+		wallSet = Mat.zeros((int) startingSet.size().height, newWidth, startingSet.type());
+		int j = 0;
+		for(int i = 0; i < startingSet.size().width; i++)
+			if(tempMask.get(Math.min((int)(startingSet.get(0,i).clone()[1] + startingSet.get(0,i).clone()[3])/2 + 10, 1080),
+		    				(int) (startingSet.get(0,i).clone()[0] + startingSet.get(0,i).clone()[2])/2)[0] < 128){
+				wallSet.put(0, j, startingSet.get(0, i));
+				j++;
+			}
+		return wallSet;
 	}
 
 }

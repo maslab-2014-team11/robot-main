@@ -27,7 +27,9 @@ public class CameraWorker extends Thread{
 			try {
 				List<Mat> outputs = outputData.take();
 				Coordinate[] state = stateData.take();
-			
+				
+				this.map.visualizer.setCameraImages(outputs);
+				
 				Mat redBalls = outputs.get(1);
 				for( int i = 0; i < redBalls.size().width; i++){
 					map.addRedBall(redBalls.get(0,i)[0], 

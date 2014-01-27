@@ -30,8 +30,10 @@ public class GreenBall extends MapObject{
 	
 	private void adjustEstimate(GreenBall other){
 		Coordinate otherCoord = other.getCoords()[0];
-		this.first = new Coordinate((this.first.x + otherCoord.x)/2.0,
-				                    (this.first.y + otherCoord.y)/2.0);
+		this.confidence = this.confidence + 1;
+		
+		this.first = new Coordinate((this.first.x*this.confidence + otherCoord.x)/(this.confidence + 1.0),
+				                    (this.first.y*this.confidence + otherCoord.y)/(this.confidence + 1.0));
 	}
 	
 	public Coordinate[] getCoords(){
@@ -42,11 +44,14 @@ public class GreenBall extends MapObject{
 	
 	public void Draw(Mat canvas){
 		synchronized(objectLock){
+			System.out.println(this.first.x);
+			System.out.println(this.first.y);
+			
 			Point center = new Point(this.first.x, this.first.y);
 			int radius = (int) Math.round(this.second.x);
 			
 			Core.circle(canvas, center, 3, new Scalar(0,255,0), -1, 5, 0);
-			Core.circle(canvas, center, radius, new Scalar(0,255,0), 3, 5, 0);
+			Core.circle(canvas, center, radius, new Scalar(0,255,0), 1, 5, 0);
 		}
 	}
 }

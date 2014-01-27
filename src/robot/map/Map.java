@@ -30,7 +30,7 @@ public class Map{
 	public static double botSize = 35.54;
 	private static double imageHeight, imageWidth;
 	private static double ballRadius, wallHeight;
-	private static double cameraOffset, cameraFOVx, cameraFOVy;
+	private static double cameraHeight, cameraOffset, cameraFOVx, cameraFOVy;
 	
 	public Map(int h, int w, Robot bot, boolean DebugMode){
 		this.discreteMap = new Grid(h*squareSize, w*squareSize, 1);
@@ -51,9 +51,10 @@ public class Map{
 		ballRadius = 4.445;
 		wallHeight = 15.24;
 		
-		cameraOffset = Math.PI/6.0;
+		cameraHeight = 35.56;
+		cameraOffset = Math.PI/4.0;
 		cameraFOVx = Math.PI/3.0;
-		cameraFOVy = (Math.PI)/4.0;
+		cameraFOVy = Math.PI/4.0;
 		
 	}
 	
@@ -88,8 +89,12 @@ public class Map{
 		double theta = computeTheta(x);
 		
 		double dist = (radius/2.0) * Math.atan((computePhi(x - (radius/2.0)) - computePhi(x + (radius/2.0))/2.0));
-		double rad = 0.75*(imageHeight - ballRadius*Math.tan(cameraOffset-phi)) +
+		double rad = 0.75*(imageHeight - ballRadius*Math.tan(cameraOffset - phi)) +
 				     0.25*(Math.sqrt(Math.pow(dist, 2.0) - Math.pow(imageHeight - ballRadius,2.0)));
+		System.out.println(dist);
+		System.out.println(0.75*(imageHeight - ballRadius*Math.tan(cameraOffset - phi)));
+		System.out.println(0.25*(Math.sqrt(Math.pow(dist, 2.0) - Math.pow(cameraHeight - ballRadius,2.0))));
+		System.out.println(rad);
 		
 		double depth = rad*Math.cos(theta);
 		double offset = rad*Math.sin(theta);
@@ -119,7 +124,7 @@ public class Map{
 		
 		double dist = (radius/2.0) * Math.atan((computePhi(x - (radius/2.0)) - computePhi(x + (radius/2.0))/2.0));
 		double rad = 0.75*(imageHeight - ballRadius*Math.tan(cameraOffset-phi)) +
-				     0.25*(Math.sqrt(Math.pow(dist, 2.0) - Math.pow(imageHeight - ballRadius,2.0)));
+				     0.25*(Math.sqrt(Math.pow(dist, 2.0) - Math.pow(cameraHeight - ballRadius,2.0)));
 		
 		double depth = rad*Math.cos(theta);
 		double offset = rad*Math.sin(theta);

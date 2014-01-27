@@ -73,7 +73,9 @@ public class Grid {
 		double ym = Math.signum(y2-y1);
 		for(int i = (int) x1; i*xm < x2*xm; i = (int) (i + 1*xm))
 			for(int j = (int) y1; j*ym < y2*ym; j = (int) (j + 1*ym))
-				setCoord(i,j,false);
+				for(int m = -18; m < 19; m++)
+					for(int n = -18; n < 19; n++)
+						setCoord(i+m,j+n,false);
 	}
 	
 	public void addWalls(Iterator<Wall> obstructionSet){

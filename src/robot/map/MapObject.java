@@ -6,6 +6,8 @@ public abstract class MapObject {
 	protected Coordinate first;
 	protected Coordinate second;
 	
+	protected double confidence = 0.0;
+	
 	protected Object objectLock = new Object();
 	
 	public String toString(){return "not implemented";}
