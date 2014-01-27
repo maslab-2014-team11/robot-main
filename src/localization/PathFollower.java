@@ -2,15 +2,11 @@ package localization;
 
 import java.util.List;
 
-import localization.CarrotPathFollower.Coordinate;
+import robot.map.Coordinate;
 
 public interface PathFollower {
 
 	public void setPath(List<Coordinate> newPath);
-
-	public void addToPath(List<Coordinate> newPath);
-
-	public void addToPath(Coordinate nextPoint);
 
 	public Result followPath();
 
