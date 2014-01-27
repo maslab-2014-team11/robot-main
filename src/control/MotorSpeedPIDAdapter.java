@@ -36,7 +36,7 @@ public class MotorSpeedPIDAdapter implements PIDInputOutput {
 		double dwDt = 1000 * (newAngle - lastAngle) / (time - lastTime);
 		this.lastTime = time;
 		this.lastAngle = newAngle;
-		System.out.println(dwDt);
+		// System.out.println(dwDt);
 		return dwDt - desiredSpeed;
 
 	}
@@ -53,7 +53,7 @@ public class MotorSpeedPIDAdapter implements PIDInputOutput {
 
 	@Override
 	public void output(double value) {
-		System.out.println("                      " + value);
+		System.out.println(value);
 		this.motor.setSpeed(value);
 	}
 

@@ -58,8 +58,16 @@ public class PIDController {
 			this.integral += (input + lastValue) / 1000 * timeDiff;
 			io.output(derivative * diffCoeff + integral * intCoeff + input
 					* propCoeff);
+		} else {
+			io.output(input * propCoeff);
 		}
 		this.lastValue = input;
 		this.lastTime = thisTime;
+	}
+
+	public void reset() {
+		this.integral = 0;
+		this.lastTime = 0;
+		this.lastValue = 0;
 	}
 }
