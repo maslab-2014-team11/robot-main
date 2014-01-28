@@ -53,7 +53,7 @@ public class MotorSpeedPIDAdapter implements PIDInputOutput {
 
 	@Override
 	public void output(double value) {
-		System.out.println(value);
+//		System.out.println(value);
 		this.motor.setSpeed(value);
 	}
 
