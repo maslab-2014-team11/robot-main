@@ -47,6 +47,7 @@ public class Robot{
 	
 	private final Maple maple;
 	private CarrotPathFollower controller;
+	private PoseSource posSource;
 	private List<Coordinate> controllerPath = Arrays.asList(Coordinate.ORIGIN,
 			new Coordinate(9.2029, 10.0000), new Coordinate(14.2754,
 					30.2899), new Coordinate(22.6812, 52.0290),
@@ -110,9 +111,9 @@ public class Robot{
 		rightMotor.setMaxMagnitudeOutput(0.2);
 		maple.start();
 		
-		PoseSource posSource = new GyroEncoderDeadReckoner(rightEnc, leftEnc, gyro);
+		posSource = new GyroEncoderDeadReckoner(rightEnc, leftEnc, gyro);
 		Drive drive = new Drive(this.right, this.left, posSource);
-		posSource.setCurrentPose(Coordinate.ORIGIN, 0);
+		posSource.setCurrentPose(Coordinate.ORIGIN, 90);
 		controller = new CarrotPathFollower(posSource, drive, 30);
 	}
 	
@@ -138,6 +139,8 @@ public class Robot{
 				controller.setPath(getPath());
 			if(controller.followPath() == Result.Finished)
 				decisionEngine.hasFinished();
+			map.setState(new Coordinate[]{ new Coordinate(posSource.getPosition()),
+										   new Coordinate(Math.toRadians(posSource.getHeading()), 0.0)});
 		}
 	}
 }

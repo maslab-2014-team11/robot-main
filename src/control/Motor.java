@@ -36,7 +36,7 @@ public class Motor {
 			this.state = State.Floating;
 			motor.setSpeed(0);
 		}
-		System.out.println("brake");
+		//System.out.println("brake");
 	}
 
 	public void setAngularSpeed(double degPerSec) {

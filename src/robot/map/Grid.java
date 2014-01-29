@@ -80,10 +80,9 @@ public class Grid {
 	
 	public void addWalls(Iterator<Wall> obstructionSet){
 		synchronized(gridLock){
-		resetGrid();
-		for(;obstructionSet.hasNext();){
-			addWall(obstructionSet.next());
-		}
+			resetGrid();
+			for(;obstructionSet.hasNext();)
+				addWall(obstructionSet.next());
 		}
 	}
 	

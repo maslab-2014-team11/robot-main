@@ -52,13 +52,13 @@ public class Drive {
 	public State driveTowards(Coordinate target) {
 		Coordinate currentLoc = poseSource.getPosition();
 		double currentHeading = poseSource.getHeading();
-		System.out.format("drive: %s: %s, %.2f to %s\n", this.state,
-				currentLoc, currentHeading, target);
+		//System.out.format("drive: %s: %s, %.2f to %s\n", this.state,
+				//currentLoc, currentHeading, target);
 		Coordinate delta = currentLoc.vectorTo(target);
 
 		double deltaAngle = normalizeAngleDeg(delta.angleFromOriginDeg()
 				- currentHeading);
-		System.out.println("deltaAngle: " + deltaAngle);
+		//System.out.println("deltaAngle: " + deltaAngle);
 		double deltaAngleMag = Math.abs(deltaAngle);
 		double distance = currentLoc.distanceFrom(target);
 		switch (this.state) {
@@ -77,8 +77,8 @@ public class Drive {
 				this.anglePID.step();
 				double rightWheelSpeed = forwardDegPerSec - this.anglePIDOutput;
 				double leftWheelSpeed = forwardDegPerSec + this.anglePIDOutput;
-				System.out.format("%6.2f,  %6.2f\n", forwardDegPerSec,
-						this.anglePIDOutput);
+				//System.out.format("%6.2f,  %6.2f\n", forwardDegPerSec,
+						//this.anglePIDOutput);
 				this.right.setAngularSpeed(rightWheelSpeed);
 				this.left.setAngularSpeed(leftWheelSpeed);
 			}
@@ -105,7 +105,7 @@ public class Drive {
 				double leftWheelSpeed = -turnWheelDegPerSec;
 				this.right.setAngularSpeed(rightWheelSpeed);
 				this.left.setAngularSpeed(leftWheelSpeed);
-				System.out.println("angularSpeed: " + turnSpeed);
+				//System.out.println("angularSpeed: " + turnSpeed);
 			}
 			break;
 		}

@@ -64,6 +64,10 @@ public class DecisionEngine extends Thread{
 			
 			if(stepSystem()){
 				path = pathfinder.findPath(activeState.target());
+				System.out.println("==Start==");
+				for(Iterator<Coordinate> coord = path.iterator(); coord.hasNext();)
+					System.out.println(coord.next().toString());
+				System.out.println("===End===");
 				//bot.setPath(path);
 				reached = false;
 			}
@@ -76,6 +80,7 @@ public class DecisionEngine extends Thread{
 			if(object.confident && !object.used){
 				stateSet.add(new Move(Type.RED_BALL, object.getCoords()[0], object));
 				object.used = true;
+				System.out.println("Add Red");
 			}
 		}
 		
@@ -84,6 +89,7 @@ public class DecisionEngine extends Thread{
 			if(object.confident && !object.used){
 				stateSet.add(new Move(Type.GREEN_BALL, object.getCoords()[0], object));
 				object.used = true;
+				System.out.println("Add Green");
 			}
 		}
 	}
