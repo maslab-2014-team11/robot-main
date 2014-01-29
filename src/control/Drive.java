@@ -58,7 +58,7 @@ public class Drive {
 
 		double deltaAngle = normalizeAngleDeg(delta.angleFromOriginDeg()
 				- currentHeading);
-		System.out.println("deltaAngle: "+deltaAngle);
+		System.out.println("deltaAngle: " + deltaAngle);
 		double deltaAngleMag = Math.abs(deltaAngle);
 		double distance = currentLoc.distanceFrom(target);
 		switch (this.state) {
@@ -96,7 +96,7 @@ public class Drive {
 			if (deltaAngleMag < TURN_FINISHED_THRESHOLD) {
 				this.state = State.Stopped;
 			} else {
-				double turnSpeed = clip(deltaAngleMag, 5, 20)
+				double turnSpeed = getTurnSpeed(deltaAngleMag)
 						* Math.signum(deltaAngle);
 
 				double turnWheelDegPerSec = turnSpeed * WHEEL_SEPARATION / 2.
@@ -105,6 +105,7 @@ public class Drive {
 				double leftWheelSpeed = -turnWheelDegPerSec;
 				this.right.setAngularSpeed(rightWheelSpeed);
 				this.left.setAngularSpeed(leftWheelSpeed);
+				System.out.println("angularSpeed: " + turnSpeed);
 			}
 			break;
 		}
@@ -121,6 +122,12 @@ public class Drive {
 		this.right.step();
 
 		return this.state;
+	}
+
+	private double getTurnSpeed(double deltaAngleMag) {
+		if (deltaAngleMag > 25)
+			return 25;
+		return (deltaAngleMag * deltaAngleMag) / 25;
 	}
 
 	private double normalizeAngleDeg(double angle) {
