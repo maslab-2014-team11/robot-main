@@ -33,6 +33,7 @@ public class Visualizer extends Thread{
 	
 	private int width = 1920;
 	private int height = 1080;
+	private int mapScale = 5;
 	
 	JLabel cameraPane = createWindow("Camera output", width, height);
 	JLabel mapPane = createWindow("Map output", width, height);
@@ -70,21 +71,21 @@ public class Visualizer extends Thread{
 	
 	public void run(){
 		while(true){
-			mapImage = Mat.zeros(w*Map.squareSize, 
-								 h*Map.squareSize, 
+			mapImage = Mat.zeros(w*Map.squareSize*mapScale, 
+								 h*Map.squareSize*mapScale, 
 								 CvType.CV_8UC3);
 			mapImage.setTo(new Scalar(255,255,255));
 			
 			Coordinate[] state = map.getState();
 			
 			for(Iterator<RedBall> balls = map.getRedBalls(); balls.hasNext();)
-				balls.next().Draw(mapImage);
+				balls.next().Draw(mapImage, mapScale);
 			
 			for(Iterator<GreenBall> balls = map.getGreenBalls(); balls.hasNext();)
-				balls.next().Draw(mapImage);
+				balls.next().Draw(mapImage, mapScale);
 			
 			for(Iterator<Wall> walls = map.getWalls(); walls.hasNext();)
-				walls.next().Draw(mapImage);
+				walls.next().Draw(mapImage, mapScale);
 			
 			DrawRobot(mapImage, state);
 			
