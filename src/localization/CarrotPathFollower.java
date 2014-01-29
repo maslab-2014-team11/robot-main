@@ -28,6 +28,12 @@ public class CarrotPathFollower implements PathFollower {
 			path.addAll(newPath);
 		}
 	}
+	
+	public boolean checkPath(List<Coordinate> testPath) {
+		synchronized (path) {
+			return path.equals(testPath);
+		}
+	}
 
 	@Override
 	public Result followPath() {

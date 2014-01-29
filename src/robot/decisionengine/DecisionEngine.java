@@ -26,6 +26,8 @@ public class DecisionEngine extends Thread{
 	private boolean reached;
 	private int time;
 	
+	private List<Coordinate> path = new ArrayList<Coordinate>();
+	
 	private List<robot.decisionengine.State> stateSet = new ArrayList<robot.decisionengine.State>();
 	private robot.decisionengine.State activeState = new robot.decisionengine.State();
 	
@@ -38,6 +40,10 @@ public class DecisionEngine extends Thread{
 		this.time = (int) bot.getTime();
 	}
 	
+	public void hasFinished(){
+		this.reached = true;
+	}
+	
 	public void run(){
 		while(true){
 			establishStates();
@@ -45,20 +51,26 @@ public class DecisionEngine extends Thread{
 			if(stateSet.isEmpty())
 				stateSet.add(new Explore(new Coordinate(0,5)));
 			
+			if(reached){
+				activeState.remove();
+				activeState = new robot.decisionengine.State();
+			}
+			
 			Coordinate location = map.getState()[0];
 			double time = bot.getTime();
 			
 			stepStates(location, time, routed);
 			activeState.step(location, time, false);
 			
-			if(stepSystem())
-				break;
-				// update path, send new path
-				
+			if(stepSystem()){
+				path = pathfinder.findPath(activeState.target());
+				//bot.setPath(path);
+				reached = false;
+			}
 		}
 	}
 	
-	public void establishStates(){
+	private void establishStates(){
 		for(Iterator<RedBall> balls = map.getRedBalls(); balls.hasNext();){
 			RedBall object = balls.next();
 			if(object.confident && !object.used){
@@ -76,12 +88,12 @@ public class DecisionEngine extends Thread{
 		}
 	}
 	
-	public void stepStates(Coordinate location, double time, boolean routed){
+	private void stepStates(Coordinate location, double time, boolean routed){
 		for(robot.decisionengine.State state: stateSet)
 			state.step(location, time, routed);
 	}
 	
-	public boolean stepSystem(){
+	private boolean stepSystem(){
 		boolean changedMove = false;
 		for(robot.decisionengine.State state: stateSet)
 			if(state.estimate() < activeState.estimate()){
