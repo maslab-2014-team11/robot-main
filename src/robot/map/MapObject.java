@@ -6,7 +6,9 @@ public abstract class MapObject {
 	protected Coordinate first;
 	protected Coordinate second;
 	
-	protected double confidence = 0.0;
+	protected double confidence = 1.0;
+	public boolean confident = false;
+	public boolean used = false;
 	
 	protected Object objectLock = new Object();
 	
@@ -14,5 +16,7 @@ public abstract class MapObject {
 	
 	public Coordinate[] getCoords(){return null;}
 	
-	public void Draw(Mat canvas){}
+	public void Draw(Mat canvas, int scale){}
+	
+	public void Remove(){}
 }

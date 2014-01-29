@@ -52,22 +52,16 @@ public class Camera extends Thread {
 	
 	public void run(){
 		while(true){
-			System.out.println("Fetching Image");
 			this.input.getImage(rawImage);
-			System.out.println("Fetching State");
 			Coordinate[] state = map.getState();
 			List<Mat> outputSets = new ArrayList<Mat>();
 			outputSets.add(rawImage);
-			
-			System.out.println("Image & State -> Data");
 			
 			prepImage();
 			
 			outputSets.addAll(findRedBalls(false));
 			outputSets.addAll(findGreenBalls(false));
 			outputSets.addAll(findBlueWalls(false));
-			
-			System.out.println("Pushing Data");
 			
 			try {
 				stateData.put(state);
@@ -95,9 +89,9 @@ public class Camera extends Thread {
 		fillBallSet(grayImage, redBalls);
 		redBalls = thresholdBalls(redBalls, maskedImage);
 		if(debugMode){
-			//output.add(maskedImage);
-			Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
-			output.add(grayImage);
+			output.add(maskedImage);
+			//Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
+			//output.add(grayImage);
 		}
 		output.add(redBalls);
 		return output;
@@ -114,9 +108,9 @@ public class Camera extends Thread {
 		fillBallSet(grayImage, greenBalls);
 		greenBalls = thresholdBalls(greenBalls, maskedImage);
 		if(debugMode){
-			//output.add(maskedImage);
-			Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
-			output.add(grayImage);
+			output.add(maskedImage);
+			//Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
+			//output.add(grayImage);
 		}
 		output.add(greenBalls);
 		return output;
@@ -133,8 +127,9 @@ public class Camera extends Thread {
 		fillLineSet(grayImage, blueWalls);
 		blueWalls = thresholdWalls(blueWalls, maskedImage);
 		if(debugMode){
-			Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
 			output.add(maskedImage);
+			//Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
+			//output.add(grayImage);
 		}
 		output.add(blueWalls);
 		return output;
@@ -197,14 +192,18 @@ public class Camera extends Thread {
 		Imgproc.blur(mask, tempMask, new Size(1,1));
 		int newWidth = 0;
 		for(int i = 0; i < startingSet.size().width; i++)
-			if(tempMask.get((int) startingSet.get(0,i).clone()[1],
-							(int) startingSet.get(0,i).clone()[0])[0] < 128)
+			if((tempMask.get((int) startingSet.get(0,i).clone()[1],
+							 (int) startingSet.get(0,i).clone()[0])[0] < 128) &&
+			   (startingSet.get(0,i).clone()[0] > 250 && startingSet.get(0,i).clone()[0] < 1920-250) &&
+			   (startingSet.get(0,i).clone()[1] > 150 && startingSet.get(0,i).clone()[1] < 1080-150))
 				newWidth++;
 		ballSet = Mat.zeros((int) startingSet.size().height, newWidth, startingSet.type());
 		int j = 0;
 		for(int i = 0; i < startingSet.size().width; i++)
-			if(tempMask.get((int) startingSet.get(0,i).clone()[1],
-							(int) startingSet.get(0,i).clone()[0])[0] < 128){
+			if((tempMask.get((int) startingSet.get(0,i).clone()[1],
+					 (int) startingSet.get(0,i).clone()[0])[0] < 128) &&
+			  (startingSet.get(0,i).clone()[0] > 250 && startingSet.get(0,i).clone()[0] < 1920-250) &&
+			  (startingSet.get(0,i).clone()[1] > 150 && startingSet.get(0,i).clone()[1] < 1080-150)){
 				ballSet.put(0, j, startingSet.get(0, i));
 				j++;
 			}

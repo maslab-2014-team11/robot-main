@@ -21,4 +21,13 @@ public class Constants {
 
 	public static final Pin R_WHEEL_DIR_PIN = new Pin(1);
 	public static final Pin R_WHEEL_PWM_PIN = new Pin(0);
+	
+	public static final double mapObjectThreshold = 3.0;
+	public static final int mapObjectConfidenceThreshold = 2;
+	
+	public static final long totalGameTime = 180000;
+	public static final double decisionDistanceWeight = 1.0;
+	public static final double decisionTimeFactor = 0.01;
+	public static final double decisionRoutedFactor = 5.0;
+	public static final double decisionExploreCost = 5.0;
 }

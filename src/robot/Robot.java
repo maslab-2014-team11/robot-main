@@ -13,8 +13,10 @@ public class Robot {
 	
 	public Map map;
 	public boolean running;
-	private VideoCapture visionCamera = new VideoCapture();
+	private VideoCapture visionCamera;
 	private Camera vision;
+	
+	private long time;
 	
 	//private PathFinder pathingModule;
 	//private DecisionEngine searchModule;
@@ -22,6 +24,7 @@ public class Robot {
 	public Robot(){
 		visionCamera = new VideoCapture();
 		visionCamera.open(0);
+		time = System.currentTimeMillis();
 	}
 	
 	public void init(){
@@ -33,5 +36,9 @@ public class Robot {
 			e.printStackTrace();
 		}
 		vision.start();
+	}
+	
+	public long getTime(){
+		return System.currentTimeMillis() - time;
 	}
 }
