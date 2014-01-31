@@ -5,7 +5,7 @@ import java.util.Arrays;
 import devices.actuators.ExtendedCytron;
 import devices.sensor.ExtendedAnalogInput;
 
-public class FrontMotorControl implements Runnable {
+public class FrontRollerControl implements Runnable {
 
 	private final ExtendedCytron motor;
 	private final ExtendedAnalogInput opticalEncoder;
@@ -17,10 +17,10 @@ public class FrontMotorControl implements Runnable {
 	private long stuckTime;
 	private long lastTime;
 
-	private static final float NOT_STUCK_THRESHOLD = 5000;
-	private static final double UNSTICK_MOTOR_POWER = -.2;
-	private static final double NORMAL_MOTOR_POWER = .3;
-	private static final long MAYBE_STUCK_TIMEOUT = 800;
+	private static final float NOT_STUCK_THRESHOLD = 3500;
+	private static final double UNSTICK_MOTOR_POWER = -.5;
+	private static final double NORMAL_MOTOR_POWER = .8;
+	private static final long MAYBE_STUCK_TIMEOUT = 500;
 
 	private enum State {
 		Stopped, Turning, Stuck, MaybeStuck
@@ -29,11 +29,11 @@ public class FrontMotorControl implements Runnable {
 	private volatile State state;
 	private final Thread thread;
 
-	public FrontMotorControl(ExtendedCytron motor,
+	public FrontRollerControl(ExtendedCytron motor,
 			ExtendedAnalogInput opticalEncoder) {
 		this.motor = motor;
 		this.opticalEncoder = opticalEncoder;
-		this.encoderValues = new float[100];
+		this.encoderValues = new float[20];
 		this.nextValueIndex = 0;
 		this.state = State.Stopped;
 
@@ -47,7 +47,7 @@ public class FrontMotorControl implements Runnable {
 			switch (this.state) {
 			case Stopped:
 				motor.setSpeed(0);
-				stepAndGetVariance();
+				stepAndGetAverageCurrent();
 				Thread.yield();
 				break;
 			case MaybeStuck:
@@ -72,8 +72,8 @@ public class FrontMotorControl implements Runnable {
 	private void checkMotorIsTurning() {
 		long now = System.currentTimeMillis();
 		long delta = now - lastTime;
-		float variance = stepAndGetVariance();
-		System.out.println("variance: " + variance);
+		float current = stepAndGetAverageCurrent();
+		System.out.println("current reading: " + current);
 		lastTime = now;
 
 		if (now - delta == 0) {
@@ -91,7 +91,7 @@ public class FrontMotorControl implements Runnable {
 			}
 			break;
 		case MaybeStuck:
-			if (variance > NOT_STUCK_THRESHOLD) {
+			if (current < NOT_STUCK_THRESHOLD) {
 				this.state = State.Turning;
 				maybeStuckTime = 0;
 			} else {
@@ -105,7 +105,7 @@ public class FrontMotorControl implements Runnable {
 			break;
 		case Turning:
 			motor.setSpeed(NORMAL_MOTOR_POWER);
-			if (variance < NOT_STUCK_THRESHOLD) {
+			if (current > NOT_STUCK_THRESHOLD) {
 				this.state = State.MaybeStuck;
 			}
 		case Stopped:
@@ -114,32 +114,24 @@ public class FrontMotorControl implements Runnable {
 
 	}
 
-	private float stepAndGetVariance() {
+	private float stepAndGetAverageCurrent() {
 		encoderValues[nextValueIndex++] = opticalEncoder.getValue();
 
 		if (nextValueIndex >= encoderValues.length) {
 			nextValueIndex = 0;
 		}
-		return getVariance(encoderValues);
+		return average(encoderValues);
 	}
 
-	private static float getVariance(float[] measurements) {
-
+	private static float average(float[] values) {
+		if(values.length == 0)
+			return Float.NaN;
+		
 		float sum = 0;
-
-		for (float f : measurements) {
+		for (float f : values) {
 			sum += f;
 		}
-
-		float average = sum / measurements.length;
-		float variance = 0;
-
-		for (float f : measurements) {
-			float delta = average - f;
-			variance += delta * delta;
-		}
-
-		return variance / measurements.length;
+		return sum / values.length;
 	}
 
 	public void startMotor() {

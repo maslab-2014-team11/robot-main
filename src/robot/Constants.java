@@ -24,13 +24,17 @@ public class Constants {
 	public static final Pin R_WHEEL_DIR_PIN = new Pin(1);
 	public static final Pin R_WHEEL_PWM_PIN = new Pin(0);
 
-	public static final Pin GREEN_DISPENSER_SERVO_PIN = new Pin(5);
-	public static final Pin GREEN_DISPENSER_BREAK_BEAM_PIN = new Pin(16);
-
+	public static final Pin FRONT_ROLLER_DIR_PIN = new Pin(7);
+	public static final Pin FRONT_ROLLER_PWM_PIN = new Pin(6);
 	
+	public static final Pin FRONT_ROLLER_SENSOR_PIN = new Pin(12);
+
+	public static final Pin GREEN_DISPENSER_SERVO_PIN = new Pin(5);
+	public static final Pin GREEN_DISPENSER_BREAK_BEAM_PIN = new Pin(10);
+
 	public static final double mapObjectThreshold = 3.0;
 	public static final int mapObjectConfidenceThreshold = 2;
-	
+
 	public static final long totalGameTime = 180000;
 	public static final double decisionDistanceWeight = 1.0;
 	public static final double decisionTimeFactor = 0.01;
