@@ -12,8 +12,6 @@ public class Reset extends State{
 		this.object = null;
 	}
 	
-	public void remove(){}
-	
 	public void step(Coordinate location, double time, boolean routed){
 		this.estimate = 0;
 	}

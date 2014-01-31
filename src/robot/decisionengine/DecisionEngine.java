@@ -34,7 +34,7 @@ public class DecisionEngine extends Thread{
 	public DecisionEngine(Robot bot, Map map){
 		this.bot = bot;
 		this.map = map;
-		this.pathfinder = new PathFinder();
+		this.pathfinder = new PathFinder(map);
 		this.routed = false;
 		this.reached = false;
 		this.time = (int) bot.getTime();
@@ -49,7 +49,7 @@ public class DecisionEngine extends Thread{
 			establishStates();
 			
 			if(stateSet.isEmpty())
-				stateSet.add(new Explore(new Coordinate(0,5)));
+				stateSet.add(new Explore(new Coordinate(30,30)));
 			
 			if(reached){
 				activeState.remove();
@@ -61,15 +61,19 @@ public class DecisionEngine extends Thread{
 			
 			stepStates(location, time, routed);
 			activeState.step(location, time, false);
-			
 			if(stepSystem()){
 				path = pathfinder.findPath(activeState.target());
-				System.out.println("==Start==");
-				for(Iterator<Coordinate> coord = path.iterator(); coord.hasNext();)
-					System.out.println(coord.next().toString());
-				System.out.println("===End===");
-				//bot.setPath(path);
-				reached = false;
+				if(path != null){
+					System.out.println("found");
+					System.out.println("==Start==");
+					for(Iterator<Coordinate> coord = path.iterator(); coord.hasNext();)
+						System.out.println(coord.next().toString());
+					System.out.println("===End===");
+					//bot.setPath(path);
+					reached = false;
+				} else {
+					reached = true;
+				}
 			}
 		}
 	}
@@ -83,7 +87,7 @@ public class DecisionEngine extends Thread{
 				System.out.println("Add Red");
 			}
 		}
-		
+
 		for(Iterator<GreenBall> balls = map.getGreenBalls(); balls.hasNext();){
 			GreenBall object = balls.next();
 			if(object.confident && !object.used){

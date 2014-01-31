@@ -61,7 +61,8 @@ public class GreenBall extends MapObject{
 	
 	public void Draw(Mat canvas, int scale){
 		synchronized(objectLock){
-			Point center = new Point(this.first.x*scale, this.first.y*scale);
+			Point center = new Point(this.first.x*scale + (canvas.width()/2), 
+									 this.first.y*scale + (canvas.height()/2));
 			int radius = (int) Math.round(this.second.x*scale);
 			
 			Core.circle(canvas, center, 3, new Scalar(0,255,0), -1, 5, 0);

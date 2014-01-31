@@ -13,6 +13,10 @@ public class Move extends State{
 		this.object = object;
 	}
 	
+	public void remove(){
+		this.object.Remove();
+	}
+	
 	public void step(Coordinate location, double time, boolean routed){
 		if(!routed)
 			this.estimate = Constants.decisionDistanceWeight * location.distanceFrom(target) *

@@ -69,8 +69,10 @@ public class Wall extends MapObject{
 	
 	public void Draw(Mat canvas, int scale){
 		synchronized(objectLock){
-			 Core.line(canvas, new Point(this.first.x*scale, this.first.y*scale), 
-					   new Point(this.second.x*scale, this.second.y*scale), new Scalar(255,0,0), 1);
+			 Core.line(canvas, new Point(this.first.x*scale + (canvas.width()/2), 
+					 					 this.first.y*scale + (canvas.height()/2)), 
+					   new Point(this.second.x*scale + (canvas.width()/2), 
+							   	 this.second.y*scale + (canvas.height()/2)), new Scalar(255,0,0), 1);
 		}
 	}
 	

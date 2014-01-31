@@ -26,8 +26,10 @@ public class BFS extends SearchMethod {
 		while(!working.isEmpty()){
 			List<Coordinate> current = working.get(0);
 			working.remove(0);
-			if(current.get(current.size()-1) == goal)
+			if(current.get(current.size()-1).equals(goal))
 				return current;
+			if(current.size() > 5 * start.distanceFrom(goal))
+				break;
 			List<Coordinate> adjacents = map.discreteMap.giveMoves(current.get(current.size()-1));
 			for(Coordinate e: adjacents){
 				if(!visited.contains(e)){

@@ -28,7 +28,7 @@ public class Map{
 	
 	public static int squareSize = 31;
 	public static double botSize = 35.54;
-	private static double imageHeight, imageWidth;
+	public static double imageHeight, imageWidth;
 	private static double ballRadius, wallHeight, ballScaleFactor;
 	private static double cameraHeight, cameraOffset, cameraFOVx, cameraFOVy;
 	
@@ -45,15 +45,15 @@ public class Map{
 	}
 	
 	public void initialize(){
-		imageHeight = 1080.0;
-		imageWidth = 1920.0;
+		imageHeight = 480.0;//1080.0;
+		imageWidth = 640.0;//1920.0;
 		
 		ballRadius = 2.2225;
-		ballScaleFactor = 0.8;
+		ballScaleFactor = 0.6;
 		wallHeight = 13.97;
 		
-		cameraHeight = 33.9725;
-		cameraOffset = (Math.PI/180.0)*75.0;
+		cameraHeight = 25.4;//33.9725;
+		cameraOffset = (Math.PI/180.0)*70.0;
 		cameraFOVx = (Math.PI/180.0)*60.0;
 		cameraFOVy = (Math.PI/180.0)*45.0;
 		
@@ -90,8 +90,12 @@ public class Map{
 		double theta = computeTheta(x);
 		
 		double dist = ballRadius / Math.tan((computeTheta(x + radius*ballScaleFactor) - computeTheta(x - radius*ballScaleFactor))/2.0);
-		double rad = 0.75*((cameraHeight - ballRadius)/Math.atan(cameraOffset - phi)) +
-					 0.25*(Math.sqrt(Math.pow(dist, 2.0) - Math.pow(cameraHeight - ballRadius,2.0)));
+		double rad;
+		if((Math.sqrt(Math.pow(dist, 2.0) - Math.pow((cameraHeight - ballRadius),2.0))) > 0)
+			rad = 0.75*((cameraHeight - ballRadius)/Math.atan(cameraOffset - phi)) +
+				  0.25*(Math.sqrt(Math.pow(dist, 2.0) - Math.pow((cameraHeight - ballRadius),2.0)));
+		else
+			rad = 0.75*((cameraHeight - ballRadius)/Math.atan(cameraOffset - phi));
 		
 		double depth = rad*Math.cos(theta);
 		double offset = rad*Math.sin(theta);
@@ -120,9 +124,13 @@ public class Map{
 		double theta = computeTheta(x);
 		
 		double dist = ballRadius / Math.tan((computeTheta(x + radius*ballScaleFactor) - computeTheta(x - radius*ballScaleFactor))/2.0);
-		double rad = 0.75*((cameraHeight - ballRadius)/Math.atan(cameraOffset - phi)) +
-					 0.25*(Math.sqrt(Math.pow(dist, 2.0) - Math.pow(cameraHeight - ballRadius,2.0)));
-		
+		double rad;
+		if((Math.sqrt(Math.pow(dist, 2.0) - Math.pow((cameraHeight - ballRadius),2.0))) > 0)
+			rad = 0.75*((cameraHeight - ballRadius)/Math.atan(cameraOffset - phi)) +
+				  0.25*(Math.sqrt(Math.pow(dist, 2.0) - Math.pow((cameraHeight - ballRadius),2.0)));
+		else
+			rad = 0.75*((cameraHeight - ballRadius)/Math.atan(cameraOffset - phi));
+
 		double depth = rad*Math.cos(theta);
 		double offset = rad*Math.sin(theta);
 		
@@ -146,13 +154,13 @@ public class Map{
 	public void addWall(double x1, double y1, double x2, double y2, Coordinate[] state){
 		double facing = state[1].x;
 		Coordinate origin = state[0];
-		double phi1 = computePhi(y1);
+		double phi1 = computePhi(y1); 
 		double theta1 = computeTheta(x1);
 		double phi2 = computePhi(y2);
 		double theta2 = computeTheta(x2);
 
-		double r1 = (1 / ballScaleFactor) * ((cameraHeight - wallHeight) / Math.tan(90.0 - cameraOffset + phi1));
-		double r2 = (1 / ballScaleFactor) * ((cameraHeight - wallHeight) / Math.tan(90.0 - cameraOffset + phi2));
+		double r1 = ((cameraHeight - wallHeight) / Math.atan(cameraOffset/2.0 + phi1));
+		double r2 = ((cameraHeight - wallHeight) / Math.atan(cameraOffset/2.0 + phi2));
 		
 		double depth1 = r1*Math.cos(theta1);
 		double offset1 = r1*Math.sin(theta1);

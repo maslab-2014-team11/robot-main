@@ -23,6 +23,7 @@ import localization.GyroEncoderDeadReckoner;
 import localization.PathFollower.Result;
 import localization.PoseSource;
 
+import org.opencv.highgui.Highgui;
 import org.opencv.highgui.VideoCapture;
 
 import control.Drive;
@@ -82,7 +83,7 @@ public class Robot{
 		this.maple = Maple.getMaple();
 
 		this.visionCamera = new VideoCapture();
-		this.visionCamera.open(0);
+		this.visionCamera.open(2);
 		this.time = System.currentTimeMillis();
 	}
 	
@@ -113,7 +114,10 @@ public class Robot{
 		
 		posSource = new GyroEncoderDeadReckoner(rightEnc, leftEnc, gyro);
 		Drive drive = new Drive(this.right, this.left, posSource);
-		posSource.setCurrentPose(Coordinate.ORIGIN, 90);
+		posSource.setCurrentPose(Coordinate.ORIGIN, 0.0);
+		map.setState(new Coordinate[]{ new Coordinate(posSource.getPosition()),
+							   		   new Coordinate(Math.toRadians(posSource.getHeading()), 0.0)});
+		System.out.print(map.getState()[1].toString());
 		controller = new CarrotPathFollower(posSource, drive, 30);
 	}
 	
@@ -139,8 +143,8 @@ public class Robot{
 				controller.setPath(getPath());
 			if(controller.followPath() == Result.Finished)
 				decisionEngine.hasFinished();
-			map.setState(new Coordinate[]{ new Coordinate(posSource.getPosition()),
-										   new Coordinate(Math.toRadians(posSource.getHeading()), 0.0)});
+			//map.setState(new Coordinate[]{ new Coordinate(posSource.getPosition()),
+			//							   new Coordinate(posSource.getHeading(), 0.0)});
 		}
 	}
 }

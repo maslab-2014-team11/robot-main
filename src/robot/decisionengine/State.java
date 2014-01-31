@@ -31,9 +31,7 @@ public class State {
 		return this.target;
 	}
 	
-	public void remove(){
-		object.Remove();
-	}
+	public void remove(){}
 	
 	public void step(Coordinate location, double time, boolean routed){
 		this.estimate = Double.MAX_VALUE;

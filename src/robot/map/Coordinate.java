@@ -54,6 +54,13 @@ public class Coordinate {
         double otherSecond = ((Coordinate) o).y;
         return this.x == otherFirst && this.y == otherSecond;
     }
+    
+    @Override
+    public int hashCode(){
+    	int hash = ((int) this.x ^ ((int) this.x >>> 32));
+    	hash = 31*hash + ((int) this.y ^ ((int) this.y >>> 32));
+    	return hash;
+    }
 
 	@Override
 	public String toString() {

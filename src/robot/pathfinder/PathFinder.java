@@ -17,19 +17,28 @@ public class PathFinder{
 	
 	private BFS search;
 	
+	public PathFinder(Map map){
+		this.map = map;
+		this.search = new BFS(map);
+	}
+	
 	public List<Coordinate> findPath(Coordinate start, Coordinate goal){
 		
-		if(paths.get(start) == null)
+		/*if(paths.get(start) == null)
 			paths.put(start, new HashMap<Coordinate,List<Coordinate>>());
 		if(paths.get(start).get(goal) == null)
-			paths.get(start).put(goal, search.search(start, goal));
+			paths.get(start).put(goal, search.search(start, goal));*/
 		
-		return paths.get(start).get(goal);
+		return search.search(start, goal);
 	}
 	
 	public List<Coordinate> findPath(Coordinate goal){
 		Coordinate start = map.getState()[0];
-		return findPath(start, goal);
+		Coordinate roundedStart = new Coordinate(Math.round(start.x),
+												 Math.round(start.y));
+		Coordinate roundedGoal = new Coordinate(Math.round(goal.x),
+				 								Math.round(goal.y));
+		return findPath(roundedStart, roundedGoal);
 	}
 	
 }
