@@ -3,20 +3,21 @@ package control;
 import devices.actuators.ExtendedServo;
 import devices.sensor.ExtendedAnalogInput;
 
-public class FrontDispenserController {
+public class GreenDispenserController {
 
-	private static final double SERVO_NEUTRAL_ANGLE = 100;
-	private static final double SERVO_TOP_ANGLE = 150;
-	private static final double SERVO_BOTTOM_ANGLE = 60;
+	private static final double SERVO_NEUTRAL_ANGLE = 120;
+	private static final double SERVO_TOP_ANGLE = 280;
+	private static final double SERVO_BOTTOM_ANGLE = 10;
+	private static final long SERVO_DISPENSE_TIME = 1000;
 
 	private static final long SERVO_DISPENSE_DELAY = 1000;
 	private static final long SERVO_RETURN_DELAY = 800;
-	private static final float BREAK_BEAM_THRESHOLD = 200;
+	private static final float BREAK_BEAM_THRESHOLD = 450;
 
 	private final ExtendedServo servo;
 	private final ExtendedAnalogInput breakBeam;
 
-	public FrontDispenserController(ExtendedAnalogInput breakBeam,
+	public GreenDispenserController(ExtendedAnalogInput breakBeam,
 			ExtendedServo servo) {
 		this.servo = servo;
 		this.breakBeam = breakBeam;
@@ -34,9 +35,14 @@ public class FrontDispenserController {
 		boolean hasBall = hasBall();
 		if (!hasBall)
 			return false;
+		double delta = angle - SERVO_NEUTRAL_ANGLE;
 
-		this.servo.setAngle(angle);
+		for (int i = 0; i < 20; i++) {
+			waitFor(SERVO_DISPENSE_TIME / 20);
+			servo.setAngle(SERVO_NEUTRAL_ANGLE + delta * i / 10);
+		}
 		waitFor(SERVO_DISPENSE_DELAY);
+
 		this.servo.setAngle(SERVO_NEUTRAL_ANGLE);
 		waitFor(SERVO_RETURN_DELAY);
 		return true;
@@ -47,15 +53,11 @@ public class FrontDispenserController {
 	}
 
 	private static void waitFor(long servoDispenseDelay) {
-		long now = System.currentTimeMillis();
-		while (System.currentTimeMillis() - now < servoDispenseDelay) {
-			long timeLeft = servoDispenseDelay
-					- (now - System.currentTimeMillis());
-			try {
-				Thread.sleep(timeLeft - 1);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		try {
+			Thread.sleep(servoDispenseDelay);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
