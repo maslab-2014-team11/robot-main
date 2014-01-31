@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import robot.map.objects.Robot;
 import robot.map.objects.Wall;
 
 public class Grid {
@@ -25,41 +26,43 @@ public class Grid {
 	
 	public void setCoord(int x, int y, boolean value){
 		synchronized(gridLock){
-		if( x > 0 && x < width)
-			if( y > 0 && y < height)
-				this.grid[x][y] = value;
+		if( x > -(width/2) && x < (width/2))
+			if( y > -(height/2) && y < (height/2))
+				this.grid[x+(width/2)][y+(height/2)] = value;
 		}
 	}
 	
 	public void setCoord(Coordinate coord, boolean value){
 		synchronized(gridLock){
-		if( coord.x > 0 && coord.x < width)
-			if( coord.y > 0 && coord.y < height)
-				this.grid[(int) Math.round(coord.x)][(int) Math.round(coord.y)] = value;
+		if( coord.x > -(width/2) && coord.x < (width/2))
+			if( coord.y > -(height/2) && coord.y < (height/2))
+				this.grid[(int) Math.round(coord.x)+(width/2)]
+						 [(int) Math.round(coord.y)+(height/2)] = value;
 		}
 	}
 	
 	public boolean getCoord(int x, int y){
 		synchronized(gridLock){
-		if( x > 0 && x < width)
-			if( y > 0 && y < height)
-				return this.grid[x][y];
+		if( x > -(width/2) && x < (width/2))
+			if( y > -(height/2) && y < (height/2))
+				return this.grid[x+(width/2)][y+(height/2)];
 		return false;
 		}
 	}
 	
 	public boolean getCoord(Coordinate coord){
 		synchronized(gridLock){
-		if( coord.x > 0 && coord.x < width)
-			if( coord.y > 0 && coord.y < height)
-				return this.grid[(int) Math.round(coord.x)][(int) Math.round(coord.y)];
+		if( coord.x > -(width/2) && coord.x < (width/2))
+			if( coord.y > -(height/2) && coord.y < (height/2))
+				return this.grid[(int) Math.round(coord.x)+(width/2)]
+						 		[(int) Math.round(coord.y)+(height/2)];
 		return false;
 		}
 	}
 	
 	private void resetGrid(){
-		for(int i = 0; i < width; i++)
-			for(int j = 0; j < height; j++)
+		for(int i = -(width/2); i < (width/2); i++)
+			for(int j = -(height/2); j < (height/2); j++)
 				setCoord(i,j,true);
 	}
 	
@@ -73,8 +76,8 @@ public class Grid {
 		double ym = Math.signum(y2-y1);
 		for(int i = (int) x1; i*xm < x2*xm; i = (int) (i + 1*xm))
 			for(int j = (int) y1; j*ym < y2*ym; j = (int) (j + 1*ym))
-				for(int m = -18; m < 19; m++)
-					for(int n = -18; n < 19; n++)
+				for(int m = -2; m < 3; m++)
+					for(int n = -2; n < 3; n++)
 						setCoord(i+m,j+n,false);
 	}
 	
@@ -86,24 +89,22 @@ public class Grid {
 		}
 	}
 	
-	public List<Coordinate> giveMoves(int x, int y){
-		synchronized(gridLock){
-		List<Coordinate> output = new ArrayList<Coordinate>();
-		for(int i = -1; i < 2; i++)
-			for(int j = -1; j < 2; j++)
-				if(!(i == 0 && j == 0) && getCoord(x+i,y+i))
-					output.add(new Coordinate(x + i, y + j));
-		return output;
-		}
-	}
-	
 	public List<Coordinate> giveMoves(Coordinate coord){
 		synchronized(gridLock){
 		List<Coordinate> output = new ArrayList<Coordinate>();
 		for(int i = -1; i < 2; i++)
 			for(int j = -1; j < 2; j++)
-				if(!(i == 0 && j == 0) && getCoord((int) Math.round(coord.x+i),(int) Math.round(coord.y+i)))
-					output.add(new Coordinate(Math.round(coord.x+i),Math.round(coord.y+i)));
+				if(!(i == 0 && j == 0) && getCoord((int) Math.round(coord.x+i),(int) Math.round(coord.y+i))){
+					boolean collision = false;
+					boolean[][] moveProfile = Robot.getProfile(i, j);
+					for(int m = 0; m < moveProfile.length; m++)
+						for(int n = 0; n < moveProfile[0].length; n++)
+							if(moveProfile[m][n])
+								if(!getCoord((int)Math.round(coord.x+i+m), (int)Math.round(coord.y+j+n)))
+									collision = true;
+					if(!collision)
+						output.add(new Coordinate(Math.round(coord.x+i),Math.round(coord.y+j)));
+				}
 		return output;
 		}
 	}

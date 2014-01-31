@@ -14,8 +14,6 @@ public class Explore extends State{
 		this.object = null;
 	}
 	
-	public void remove(){}
-	
 	public void step(Coordinate location, double time, boolean routed){
 		if(!routed)
 			this.estimate = Constants.decisionDistanceWeight * location.distanceFrom(target) *

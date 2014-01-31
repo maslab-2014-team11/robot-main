@@ -35,7 +35,7 @@ public class Constants {
 	public static final double decisionDistanceWeight = 1.0;
 	public static final double decisionTimeFactor = 0.01;
 	public static final double decisionRoutedFactor = 5.0;
-	public static final double decisionExploreCost = 5.0;
+	public static final double decisionExploreCost = 10.0;
 
 	public static final SPI GYRO_SPI_PORT = SPI.Two;
 	public static final Pin GYRO_SS_PIN = new Pin(36);

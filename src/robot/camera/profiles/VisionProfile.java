@@ -18,10 +18,10 @@ public class VisionProfile extends Profile{
 		
 		this.redMinima = new Scalar(15, 0, 0);
 		this.redMaxima = new Scalar(160, 255, 255);
-		this.greenMinima = new Scalar(50, 100, 30);//35,60,20//50,100,30
+		this.greenMinima = new Scalar(50, 80, 50);//35,60,20//50,100,30
 		this.greenMaxima = new Scalar(90, 255, 220);//120,255,255//170,255,160
-		this.blueMinima = new Scalar(90, 120, 120);//0,20,20
-		this.blueMaxima = new Scalar(140, 250, 250);//35,230,230
+		this.blueMinima = new Scalar(90, 120, 120);//0,20,20//90,120,120
+		this.blueMaxima = new Scalar(160, 250, 250);//35,230,230//140,250,250
 		
 		this.sobelStrength = 150;//250
 		

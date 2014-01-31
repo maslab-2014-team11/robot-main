@@ -33,7 +33,7 @@ public class Visualizer extends Thread{
 	
 	private int width = 1920;
 	private int height = 1080;
-	private int mapScale = 5;
+	private int mapScale = 2;
 	
 	JLabel cameraPane = createWindow("Camera output", width, height);
 	JLabel mapPane = createWindow("Map output", width, height);
@@ -56,17 +56,19 @@ public class Visualizer extends Thread{
 	}
 	
 	private void DrawRobot(Mat canvas, Coordinate[] state){
-		Point center = new Point(state[0].x, state[0].y);
-		int radius = (int) Math.round(Map.botSize);
+		Point center = new Point(state[0].x + (canvas.width()/2), 
+								 state[0].y + (canvas.height()/2));
+		int radius = (int) Math.round(Map.botSize/2.0);
 	
-		Core.circle(canvas, center, 3, new Scalar(255,255,255), -1, 5, 0);
-		Core.circle(canvas, center, radius, new Scalar(255,255,255), 3, 5, 0);
+		Core.circle(canvas, center, 3, new Scalar(0,0,0), -1, 5, 0);
+		Core.circle(canvas, center, radius, new Scalar(0,0,0), 1, 5, 0);
 		
 		Core.line(canvas, 
-				  new Point(state[0].x, state[0].y), 
-			  	  new Point(state[0].x + Math.cos(state[1].x)*Map.botSize*0.5, 
-			  			  	state[0].y + Math.sin(state[1].x)*Map.botSize*0.5), 
-			  	  new Scalar(255,255,255), 3);
+				  new Point(state[0].x + (canvas.width()/2),
+						  	state[0].y + (canvas.height()/2)), 
+			  	  new Point(state[0].x + Math.sin(state[1].x)*Map.botSize*0.75 + (canvas.width()/2), 
+			  			  	state[0].y + Math.cos(state[1].x)*Map.botSize*0.75 + (canvas.height()/2)), 
+			  	  new Scalar(0,0,0), 1);
 	}
 	
 	public void run(){

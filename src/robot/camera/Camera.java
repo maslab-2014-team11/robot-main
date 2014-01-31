@@ -1,12 +1,15 @@
 package robot.camera;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.highgui.VideoCapture;
@@ -35,6 +38,9 @@ public class Camera extends Thread {
 	private Mat rawImage = new Mat();
 	private Mat processingImage = new Mat();
 	
+	private Mat cameraMatrix = Mat.zeros(3, 3, 6);
+	private Mat distCoeffs = Mat.zeros(5, 1, 6);
+	
 	public Camera(Type type, VideoCapture camera, Map map){
 		this.input = new CameraProducer(camera);
 		this.output = new CameraWorker(map, stateData, outputData);
@@ -48,6 +54,21 @@ public class Camera extends Thread {
 				this.Settings = new VisionProfile();
 				break;
 		}
+		
+		//
+		cameraMatrix.put(0, 0, 320.0);
+		cameraMatrix.put(1, 1, 240.0);
+		
+		cameraMatrix.put(0, 2, 320.0);
+		cameraMatrix.put(1, 2, 240.0);
+		
+		cameraMatrix.put(2, 2, 1.0);
+		//
+		distCoeffs.put(0, 0, 0.191);
+		distCoeffs.put(1, 0, -0.848);
+		distCoeffs.put(2, 0, 0.0);
+		distCoeffs.put(3, 0, 0.0);
+		distCoeffs.put(4, 0, 1.12);
 	}
 	
 	public void run(){
@@ -55,9 +76,9 @@ public class Camera extends Thread {
 			this.input.getImage(rawImage);
 			Coordinate[] state = map.getState();
 			List<Mat> outputSets = new ArrayList<Mat>();
-			outputSets.add(rawImage);
 			
 			prepImage();
+			outputSets.add(rawImage);
 			
 			outputSets.addAll(findRedBalls(false));
 			outputSets.addAll(findGreenBalls(false));
@@ -88,6 +109,7 @@ public class Camera extends Thread {
 		createEdgeMap(maskedImage, grayImage);
 		fillBallSet(grayImage, redBalls);
 		redBalls = thresholdBalls(redBalls, maskedImage);
+		undistortBalls(redBalls);
 		if(debugMode){
 			output.add(maskedImage);
 			//Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
@@ -107,6 +129,7 @@ public class Camera extends Thread {
 		createEdgeMap(maskedImage, grayImage);
 		fillBallSet(grayImage, greenBalls);
 		greenBalls = thresholdBalls(greenBalls, maskedImage);
+		undistortBalls(greenBalls);
 		if(debugMode){
 			output.add(maskedImage);
 			//Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
@@ -126,6 +149,7 @@ public class Camera extends Thread {
 		createEdgeMap(maskedImage, grayImage);
 		fillLineSet(grayImage, blueWalls);
 		blueWalls = thresholdWalls(blueWalls, maskedImage);
+		undistortWalls(blueWalls);
 		if(debugMode){
 			output.add(maskedImage);
 			//Imgproc.cvtColor(grayImage, grayImage, Imgproc.COLOR_GRAY2BGR);
@@ -228,6 +252,58 @@ public class Camera extends Thread {
 				j++;
 			}
 		return wallSet;
+	}
+	
+	private void undistortBalls(Mat ballSet){
+		List<Point> balls = new ArrayList<Point>();
+		for(int i = 0; i < ballSet.size().width; i++)
+			balls.add(new Point(ballSet.get(0,i).clone()[0],
+								ballSet.get(0,i).clone()[1]));
+		
+		MatOfPoint2f ballPoints = new MatOfPoint2f();
+		ballPoints.fromList(balls);
+		
+		if(balls.size() > 0){
+			Imgproc.undistortPoints(ballPoints, ballPoints, cameraMatrix, distCoeffs);
+			
+			int i = 0;
+			for(Iterator<Point> points = ballPoints.toList().iterator(); points.hasNext();){
+				Point working = points.next();
+				ballSet.put(0,i,new double[]{Map.imageWidth/2 + (working.x*Map.imageWidth/2), 
+				 							 Map.imageHeight/2 + (working.y*Map.imageHeight/2), 
+				 							 ballSet.get(0,i).clone()[2]});
+				i++;
+			}
+		}
+	}
+	
+	private void undistortWalls(Mat wallSet){
+		List<Point> walls = new ArrayList<Point>();
+		for(int i = 0; i < wallSet.size().width; i++){
+			walls.add(new Point(wallSet.get(0,i).clone()[0],
+								wallSet.get(0,i).clone()[1]));
+			walls.add(new Point(wallSet.get(0,i).clone()[2],
+								wallSet.get(0,i).clone()[3]));
+		}
+		
+		MatOfPoint2f wallPoints = new MatOfPoint2f();
+		MatOfPoint2f outPoints = new MatOfPoint2f();
+		wallPoints.fromList(walls);
+		
+		if(walls.size() > 0){
+			Imgproc.undistortPoints(wallPoints, outPoints, cameraMatrix, distCoeffs);
+			
+			int i = 0;
+			for(Iterator<Point> points = outPoints.toList().iterator(); points.hasNext();){
+				Point working1 = points.next();
+				Point working2 = points.next();
+				wallSet.put(0,i,new double[]{Map.imageWidth/2 + (working1.x*Map.imageWidth/2), 
+											 Map.imageHeight/2 + (working1.y*Map.imageHeight/2), 
+											 Map.imageWidth/2 + (working2.x*Map.imageWidth/2), 
+											 Map.imageHeight/2 + (working2.y*Map.imageHeight/2)});
+				i++;
+			}
+		}
 	}
 
 }
