@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import BotClient.BotClient;
+import BotClient.BotClientListener;
 
 public class BotClientComm implements Runnable {
 
@@ -86,6 +87,29 @@ public class BotClientComm implements Runnable {
 		this.client = new BotClient(HOST_AND_PORT, TOKEN, true);
 		this.thread = new Thread(this);
 		outgoingMessages = new LinkedBlockingDeque<>();
+		this.client.addListener(new BotClientListener() {
+			@Override
+			public void onGameState(boolean gameStarted) {
+				if (!gameStarted) {
+					new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							Devices d = Devices.get();
+							long now = System.currentTimeMillis();
+							while (now - System.currentTimeMillis() < 100)
+								d.drive.brake();
+							System.exit(0);
+						}
+					}).start();
+				}
+			}
+
+			@Override
+			public void onReceiveMap(String map) {
+				// do nothing
+			}
+		});
 	}
 
 	public static BotClientComm get() {
@@ -94,6 +118,19 @@ public class BotClientComm implements Runnable {
 			comm.thread.start();
 		}
 		return comm;
+	}
+
+	public void spinUntilStartSignal() {
+		while (!client.gameStarted())
+			;
+	}
+
+	public void addListener(BotClientListener listener) {
+		this.client.addListener(listener);
+	}
+
+	public String getMap() {
+		return this.client.getMap();
 	}
 
 	public void send(String name, String value) {

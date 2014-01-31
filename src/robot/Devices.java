@@ -101,5 +101,8 @@ public class Devices {
 			this.maple.registerDevice(device);
 		}
 		this.maple.start();
+		
+		// Start the separate thread for the front roller
+		this.frontRoller.start();
 	}
 }
