@@ -23,6 +23,10 @@ public class Constants {
 
 	public static final Pin R_WHEEL_DIR_PIN = new Pin(1);
 	public static final Pin R_WHEEL_PWM_PIN = new Pin(0);
+
+	public static final Pin GREEN_DISPENSER_SERVO_PIN = new Pin(5);
+	public static final Pin GREEN_DISPENSER_BREAK_BEAM_PIN = new Pin(16);
+
 	
 	public static final double mapObjectThreshold = 3.0;
 	public static final int mapObjectConfidenceThreshold = 2;
